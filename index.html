@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pl" data-anim="on">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b0d12">
+  <title>BSXS Manager</title>
+  <meta name="description" content="BSXS Manager — centrum zarządzania karierą XARO i kolektywu BSXS: utwory, wydawnictwa, studio, finanse, zadania, REAPER, diagnostyka.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon.svg">
+  <link rel="stylesheet" href="css/app.css">
+  <!-- Krytyczne CSS: ekran startowy maluje się, zanim dotrze app.css. -->
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --text: #e9edf6;
+      --muted: #9aa6bd;
+      --surface-2: #1b2130;
+      --accent: #5b8cff;
+      --accent-2: #8f6bff;
+      --space-3: 12px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; max-width: 100%; overflow-x: hidden; }
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 80% -10%, #131a2b, transparent 60%), var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    [hidden] { display: none !important; }
+    .boot {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: var(--space-3);
+      background: var(--bg);
+      z-index: 100;
+    }
+    .boot__mark { font-weight: 700; letter-spacing: 0.28em; font-size: 1.1rem; }
+    .boot__text { color: var(--muted); font-size: 0.85rem; }
+    .boot__bar {
+      width: 160px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      overflow: hidden;
+    }
+    .boot__bar span {
+      display: block;
+      width: 40%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      animation: bootslide 1.1s linear infinite;
+    }
+    @keyframes bootslide {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(300%); }
+    }
+  </style>
+  <!-- Rdzeń aplikacji pobierany równolegle: szybciej pierwszy render. -->
+  <link rel="modulepreload" href="js/core/util.js">
+  <link rel="modulepreload" href="js/core/errors.js">
+  <link rel="modulepreload" href="js/core/version.js">
+  <link rel="modulepreload" href="js/core/log.js">
+  <link rel="modulepreload" href="js/core/crypto.js">
+  <link rel="modulepreload" href="js/core/store.js">
+  <link rel="modulepreload" href="js/core/session.js">
+  <link rel="modulepreload" href="js/core/authz.js">
+  <link rel="modulepreload" href="js/core/validate.js">
+  <link rel="modulepreload" href="js/core/ui.js">
+  <link rel="modulepreload" href="js/core/router.js">
+  <link rel="modulepreload" href="js/core/diagnostics.js">
+  <link rel="modulepreload" href="js/core/backup.js">
+  <link rel="modulepreload" href="js/modules/registry.js">
+  <link rel="modulepreload" href="js/modules/dashboard.js">
+</head>
+<body>
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+
+  <div id="boot" class="boot" role="status" aria-live="polite">
+    <div class="boot__mark" aria-hidden="true">BSXS</div>
+    <div class="boot__text">Uruchamianie BSXS Manager…</div>
+    <div class="boot__bar" aria-hidden="true"><span></span></div>
+  </div>
+
+  <div id="app" class="app" hidden></div>
+
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <div id="modal-root"></div>
+
+  <noscript>
+    <div class="noscript">
+      BSXS Manager wymaga włączonego JavaScriptu. Włącz go w ustawieniach przeglądarki i odśwież stronę.
+    </div>
+  </noscript>
+
+  <script type="module" src="js/main.js"></script>
+  <!-- Kod modułów jest leniwy: pierwszy widok pobiera tylko to, czego używa. -->
+</body>
+</html>
