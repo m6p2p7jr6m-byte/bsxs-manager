@@ -27,16 +27,38 @@ jobs:
       - name: Przygotuj artefakt (bez historii git)
         run: rm -rf .git
 
-      - name: Włącz i skonfiguruj Pages
+      - name: Spróbuj włączyć Pages (może wymagać uprawnień administratora)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X POST "repos/${{ github.repository }}/pages" \
+            -f build_type=workflow \
+            -f "source[branch]=main" -f "source[path]=/" >/dev/null 2>&1 || true
+
+      - name: Sprawdź, czy Pages jest włączone
+        id: pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GitHub Pages nie jest jeszcze włączone. Wejdź w Settings → Pages → Build and deployment → Source: GitHub Actions."
+          fi
+
+      - name: Skonfiguruj Pages
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Spakuj stronę
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
       - name: Opublikuj
         id: deployment
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/deploy-pages@v4
